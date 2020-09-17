@@ -1,6 +1,5 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './App.css'
 
 /*
  * ISCG7420 Week 9 Topics.
@@ -21,6 +20,64 @@ import './App.css';
  * Default/Named Exports, Imports / Destructured imports
  * React-Router and window.history.pushState()
 */
+async function getTime() {
+  console.log('Making request')
+  //let response = await fetch('http://worldtimeapi.org/api/timezone/Pacific/Auckland')
+  let response = await fetch('http://localhost:8000/time')
+  let responseJson = await response.json()
+  console.log('Got response:')
+  console.log(responseJson)
+  return responseJson['datetime']
+}
+
+class Time extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      time: 'None yet',
+    }
+
+    this.handleClickWithAsync = this.handleClickWithAsync.bind(this)
+  }
+
+  handleClickWithPromise = (e) => {
+    e.preventDefault()
+    console.log('Clicked! -')
+    let time = getTime().then(
+      this.setState({
+        time: 'Promise set the time',
+      })
+    )
+  }
+
+  async handleClickWithAsync(e) {
+    e.preventDefault()
+    console.log('Clicked! -')
+    let time = await getTime()
+    this.setState({
+      time: time,
+    })
+  }
+
+  render() {
+    //let { currentTime } = this.props
+    //let { time='blahblah' } = this.state
+    let { time='blahblah' } = this.state
+    return (
+      <>
+        <h3 style={{'color': 'red'}}>Time: {time}</h3>
+        <input
+          type="button"
+          value="Get Time"
+          //onClick={(e) => this.handleClickWithAsync(e)}
+          onClick={this.handleClickWithAsync}
+        />
+      </>
+    )
+  }
+}
+
+
 
 
 // Functions
@@ -55,7 +112,7 @@ class MyCounter extends React.Component {
   render() {
     return (
       <div>
-        <h1>Counter {this.state.counter}. == {this.state.message}</h1>
+        <h5>Counter {this.state.counter}. == {this.state.message}</h5>
         <input type="text" value={this.state.message} onChange={this.handleInput} />
         <input type="button" value="Add 1" onClick={this.handleClick} />
       </div>
@@ -65,28 +122,8 @@ class MyCounter extends React.Component {
 
 
 const App = function() {
-  return <MyCounter />
+  return <Time currentTime={"2020-09-17T13:57:09.142406+12:00"}/>
 }
 
-function OldApp() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
-export default App;
+export default App
